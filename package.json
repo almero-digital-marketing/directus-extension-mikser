@@ -15,10 +15,10 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/index.mjs",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "directus-extension build",
-    "start": "npm run build -- --watch",
+    "start": "npm run build -- --watch --no-minify --sourcemap",
     "prepare": "npm run build"
   },
   "repository": {
