@@ -9,11 +9,12 @@
   "directus:extension": {
     "type": "hook",
     "path": "dist/index.js",
-    "source": "src/index.js",
+    "source": "index.js",
     "host": "^9.2.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "main": "./dist/index.js",
   "scripts": {
@@ -35,11 +36,6 @@
     "@directus/extensions-sdk": "^9.22.1"
   },
   "dependencies": {
-    "deepdash": "^5.3.9",
-    "fast-glob": "^3.2.12",
-    "hasha": "^5.2.2",
-    "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21",
-    "throttle-debounce": "^5.0.0"
+    "axios": "^1.2.3"
   }
 }
