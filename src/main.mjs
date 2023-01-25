@@ -11,6 +11,7 @@ export default async ({ action }, options) => {
     async function onItemsCreated({ collection, key }) {
         const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
         try {
+            logger.info('Mikser api create: %s %s', url, key)
             await axios.request({
                 method: 'post',
                 url,
@@ -27,6 +28,7 @@ export default async ({ action }, options) => {
     async function onItemsUpdated({ collection, keys }) {
         const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
         try {
+            logger.info('Mikser api update: %s %s', url, keys)
             await axios.request({
                 method: 'put',
                 url,
@@ -43,6 +45,7 @@ export default async ({ action }, options) => {
     async function onItemsDeleted({ collection, keys }) {
         const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
         try {
+            logger.info('Mikser api delete: %s %s', url, keys)
             await axios.request({
                 method: 'delete',
                 url,
