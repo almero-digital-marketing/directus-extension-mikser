@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export default async ({ action }, options) => {  
+export default async ({ action, init }, options) => {  
     const { logger } = options
     
     const headers = {}
@@ -54,8 +54,22 @@ export default async ({ action }, options) => {
                     ids: keys
                 }
             })
-       } catch (err) {
+        } catch (err) {
            logger.error('Mikser api dalete error: %s %s %s', url, keys, err.message)
+        }
+    }
+
+    async function onStart() {
+        const url = `${options.env['MIKSER']}/api/webhooks/schedule`
+        try {
+            logger.info('Mikser api schedule: %s', url)
+            await axios.request({
+                method: 'post',
+                url,
+                headers,
+            })
+        } catch (err) {
+           logger.error('Mikser api schedule error: %s %s', url, err.message)
         }
     }
 
@@ -65,6 +79,8 @@ export default async ({ action }, options) => {
         action('items.create', onItemsCreated)
         action('items.update', onItemsUpdated)
         action('items.delete', onItemsDeleted)    
+
+        action('server.start', onStart)
     } else {
         logger.error('Mikser not found')
     }
