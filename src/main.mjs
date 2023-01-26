@@ -67,6 +67,9 @@ export default async ({ action, init }, options) => {
                 method: 'post',
                 url,
                 headers,
+                data: {
+                    uri: options.env['MIKSER_URI'] || options.env['PUBLIC_URL']
+                }
             })
         } catch (err) {
            logger.error('Mikser api schedule error: %s %s', url, err.message)
