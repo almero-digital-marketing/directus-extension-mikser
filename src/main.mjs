@@ -1,89 +1,26 @@
-import axios from 'axios'
+import mikserWebhooks from 'mikser-io-webhooks'
 
-export default async ({ action, init }, options) => {  
-    const { logger } = options
-    
-    const headers = {}
-    if (options.env['MIKSER_TOKEN']) {
-        headers['Authorization'] = `Bearer ${options.env['MIKSER_TOKEN']}`
-    }
-
-    async function onItemsCreated({ collection, key }) {
-        const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
-        try {
-            logger.info('Mikser api create: %s %s', url, key)
-            await axios.request({
-                method: 'post',
-                url,
-                headers,
-                data: {
-                    id: key
-                }
-            })
-       } catch (err) {
-           logger.error('Mikser api create error: %s %s %s', url, key, err.message)
-        }
-    }
-
-    async function onItemsUpdated({ collection, keys }) {
-        const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
-        try {
-            logger.info('Mikser api update: %s %s', url, keys)
-            await axios.request({
-                method: 'put',
-                url,
-                headers,
-                data: {
-                    ids: keys
-                }
-            })
-       } catch (err) {
-            logger.error('Mikser api update error: %s %s %s', url, keys, err.message)
-       }
-    }
-    
-    async function onItemsDeleted({ collection, keys }) {
-        const url = `${options.env['MIKSER']}/api/webhooks/${collection}`
-        try {
-            logger.info('Mikser api delete: %s %s', url, keys)
-            await axios.request({
-                method: 'delete',
-                url,
-                headers,
-                data: {
-                    ids: keys
-                }
-            })
-        } catch (err) {
-           logger.error('Mikser api dalete error: %s %s %s', url, keys, err.message)
-        }
-    }
-
-    async function onStart() {
-        const url = `${options.env['MIKSER']}/api/webhooks/schedule`
-        try {
-            logger.info('Mikser api schedule: %s', url)
-            await axios.request({
-                method: 'post',
-                url,
-                headers,
-                data: {
-                    uri: options.env['MIKSER_URI'] || options.env['PUBLIC_URL']
-                }
-            })
-        } catch (err) {
-           logger.error('Mikser api schedule error: %s %s', url, err.message)
-        }
-    }
-
+export default async ({ action }, options) => {  
     if (options.env['MIKSER']) {
-        logger.info('Mikser plugin initalized: %s', options.env['MIKSER'])
+        const { logger } = options
+        const webhooks = mikserWebhooks({ url: options.env['MIKSER'], token: options.env['MIKSER_TOKEN'], logger })
         
-        action('items.create', onItemsCreated)
-        action('items.update', onItemsUpdated)
-        action('items.delete', onItemsDeleted)    
-
-        action('server.start', onStart)
+        action('items.create', async ({ collection, key }) => {
+            await webhooks.created(collection, { id: key })
+        })
+        action('items.update', async ({ collection, keys }) => {
+            for(let key of keys) {
+                await webhooks.updated(collection, { id: key })
+            }
+        })
+        action('items.delete', async ({ collection, keys }) => {
+            for(let key of keys) {
+                await webhooks.deleted(collection, { id: key })
+            }
+        })
+        action('server.start', async () => {
+            await webhooks.trigger(options.env['MIKSER_URI'] || options.env['PUBLIC_URL'])
+        })
     } else {
         logger.error('Mikser not found')
     }
