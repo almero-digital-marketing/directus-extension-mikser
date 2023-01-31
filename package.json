@@ -1,6 +1,6 @@
 {
   "name": "directus-extension-mikser",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "keywords": [
     "directus",
     "directus-extension",
@@ -33,9 +33,10 @@
   },
   "homepage": "https://github.com/almero-digital-marketing/directus-extension-mikser#readme",
   "devDependencies": {
-    "@directus/extensions-sdk": "^9.22.1"
+    "@directus/extensions-sdk": "^9.22.4"
   },
   "dependencies": {
-    "mikser-io-webhooks": "^1.0.0"
+    "mikser-io-subscribe": "^2.0.1",
+    "mikser-io-webhooks": "^1.0.4"
   }
 }
